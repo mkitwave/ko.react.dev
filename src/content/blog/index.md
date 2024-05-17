@@ -10,9 +10,9 @@ title: React 블로그
 
 <div className="sm:-mx-5 flex flex-col gap-5 mt-12">
 
-<BlogCard title="React 19 Beta " date="April 25, 2024" url="/blog/2024/04/25/react-19">
+<BlogCard title="React 19 Beta" date="April 25, 2024" url="/blog/2024/04/25/react-19">
 
-In the React 19 Beta Upgrade Guide, we shared step-by-step instructions for upgrading your app to React 19 Beta. In this post, we'll give an overview of the new features in React 19, and how you can adopt them.
+React 19 베타 업그레이드 가이드에서 애플리케이션을 React 19 베타로 업그레이드하는 단계별 지침을 공유했습니다. 이 글에서는 React 19의 새로운 기능에 대한 개요와 이를 도입하는 방법에 대해 설명하겠습니다.
 
 </BlogCard>
 

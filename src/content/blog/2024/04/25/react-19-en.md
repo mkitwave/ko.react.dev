@@ -2,7 +2,7 @@
 title: "React 19 Beta"
 author: The React Team
 date: 2024/04/25
-description: 이제 npm에서 React 19 베타를 사용할 수 있습니다! 이 글에서는 React 19의 새로운 기능에 대한 개요와 이를 도입하는 방법에 대해 설명하겠습니다.
+description: React 19 Beta is now available on npm! In this post, we'll give an overview of the new features in React 19, and how you can adopt them.
 ---
 
 April 25, 2024 by [The React Team](/community/team)
@@ -11,36 +11,36 @@ April 25, 2024 by [The React Team](/community/team)
 
 <Note>
 
-이번 베타 릴리스는 라이브러리들이 React 19를 준비하기 위해 제공되었습니다. 애플리케이션 개발자는 18.3.0으로 버전을 업그레이드하고, 라이브러리들이 피드백에 따라 변경되며 React 19가 안정화될 때까지 기다려 주세요.
+This beta release is for libraries to prepare for React 19. App developers should upgrade to 18.3.0 and wait for React 19 stable as we work with libraries and make changes based on feedback.
 
 </Note>
 
 <Intro>
 
-이제 npm에서 React 19 베타를 사용할 수 있습니다!
+React 19 Beta is now available on npm!
 
 </Intro>
 
-[React 19 베타 업그레이드 가이드](/blog/2024/04/25/react-19-upgrade-guide)에서 애플리케이션을 React 19 베타로 업그레이드하는 단계별 지침을 공유했습니다. 이 글에서는 React 19의 새로운 기능에 대한 개요와 이를 도입하는 방법에 대해 설명하겠습니다.
+In our [React 19 Beta Upgrade Guide](/blog/2024/04/25/react-19-upgrade-guide), we shared step-by-step instructions for upgrading your app to React 19 Beta. In this post, we'll give an overview of the new features in React 19, and how you can adopt them.
 
-- [React 19의 새로운 기능](#whats-new-in-react-19)
-- [React 19의 개선 사항](#improvements-in-react-19)
-- [업그레이드하는 방법](#how-to-upgrade)
+- [What's new in React 19](#whats-new-in-react-19)
+- [Improvements in React 19](#improvements-in-react-19)
+- [How to upgrade](#how-to-upgrade)
 
-주요 변경 사항 목록은 [업그레이드 가이드](/blog/2024/04/25/react-19-upgrade-guide)를 참고하세요.
+For a list of breaking changes, see the [Upgrade Guide](/blog/2024/04/25/react-19-upgrade-guide).
 
 ---
 
-## React 19의 새로운 기능 {/*whats-new-in-react-19*/}
+## What's new in React 19 {/*whats-new-in-react-19*/}
 
-### 액션(Actions) {/*actions*/}
+### Actions {/*actions*/}
 
-React 애플리케이션의 보편적인 사용 사례는 데이터를 변경하고 응답을 기반으로 상태를 업데이트하는 것입니다. 예를 들어, 사용자가 이름을 변경하기 위해 폼(form)을 제출하면, API 요청을 하고 응답을 처리합니다. 이전에는 대기 상태, 오류, 낙관적 업데이트, 순차적 요청을 직접 처리해야 했습니다.
+A common use case in React apps is to perform a data mutation and then update state in response. For example, when a user submits a form to change their name, you will make an API request, and then handle the response. In the past, you would need to handle pending states, errors, optimistic updates, and sequential requests manually.
 
-예를 들어, `useState`로 대기 상태와 오류 상태를 처리할 수 있었습니다.
+For example, you could handle the pending and error state in `useState`:
 
 ```js
-// 액션 도입 전
+// Before Actions
 function UpdateName({}) {
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
@@ -69,12 +69,12 @@ function UpdateName({}) {
 }
 ```
 
-React 19에서는, 트랜지션에서 비동기 함수를 사용하여 대기 상태, 오류, 폼 및 낙관적 업데이트를 자동으로 처리하는 기능이 추가됩니다.
+In React 19, we're adding support for using async functions in transitions to handle pending states, errors, forms, and optimistic updates automatically.
 
-아래는 `useTransition`을 사용해 대기 상태를 처리하는 예시입니다.
+For example, you can use `useTransition` to handle the pending state for you:
 
 ```js
-// 액션 기반으로 대기 상태 사용
+// Using pending state from Actions
 function UpdateName({}) {
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
@@ -103,27 +103,27 @@ function UpdateName({}) {
 }
 ```
 
-비동기 트랜지션은 `isPending` 상태를 즉시 true로 설정하고, 비동기 요청을 수행하고, 트랜지션이 실행된 이후 `isPending`을 false로 전환합니다. 이러한 방식은 데이터가 변경되는 도중에도 현재 UI의 반응성 및 상호작용을 유지할 수 있습니다.
+The async transition will immediately set the `isPending` state to true, make the async request(s), and switch `isPending` to false after any transitions. This allows you to keep the current UI responsive and interactive while the data is changing.
 
 <Note>
 
-#### 컨벤션에 따라, 비동기 트랜지션을 사용하는 함수는 "액션(Actions)"이라고 부릅니다. {/*by-convention-functions-that-use-async-transitions-are-called-actions*/}
+#### By convention, functions that use async transitions are called "Actions". {/*by-convention-functions-that-use-async-transitions-are-called-actions*/}
 
-액션은 데이터 제출을 자동으로 관리합니다.
+Actions automatically manage submitting data for you:
 
-- **대기 상태**: 액션은 요청이 시작될 때 시작하여, 최종 상태 업데이트가 커밋되면 자동으로 재설정되는 대기 상태를 제공합니다.
-- **낙관적 업데이트**: 액션은 새로운 Hook [`useOptimistic`](#new-feature-optimistic-updates)을 지원합니다. 이를 통해 요청이 제출되는 동안 사용자에게 즉각적인 피드백을 표출할 수 있습니다.
-- **오류 처리**: 액션은 오류 처리 기능을 제공합니다. 이를 통해 요청이 실패할 때 Error Boundary를 표시하고, 낙관적 업데이트 값을 자동으로 원본 값으로 되돌릴 수 있습니다.
-- **폼(form)**: 이제 `<form>` 요소의 `action`과 `formAction` 프로퍼티에 함수를 전달할 수 있습니다. `action` 프로퍼티에 함수를 전달하면 기본적으로 액션이 사용되며, 제출 이후에 자동으로 폼을 재설정합니다.
+- **Pending state**: Actions provide a pending state that starts at the beginning of a request and automatically resets when the final state update is committed.
+- **Optimistic updates**: Actions support the new [`useOptimistic`](#new-feature-optimistic-updates) hook so you can show users instant feedback while the requests are submitting.
+- **Error handling**: Actions provide error handling so you can display Error Boundaries when a request fails, and revert optimistic updates to their original value automatically.
+- **Forms**: `<form>` elements now support passing functions to the `action` and `formAction` props. Passing functions to the `action` props use Actions by default and reset the form automatically after submission.
 
 </Note>
 
-액션을 기반으로 구축된 React 19는, 낙관적 업데이트를 관리하기 위한 [`useOptimistic`](#new-hook-optimistic-updates) Hook과 액션의 일반적 사용을 위한 [`React.useActionState`](#new-hook-useactionstate) Hook을 도입하였습니다. `react-dom`에서는 폼을 자동으로 관리하기 위해 [`<form>` 액션](#form-actions)을 추가하고, 폼에서 액션의 일반적인 경우를 지원하기 위해 [`useFormStatus`](#new-hook-useformstatus)를 추가하고 있습니다.
+Building on top of Actions, React 19 introduces [`useOptimistic`](#new-hook-optimistic-updates) to manage optimistic updates, and a new hook [`React.useActionState`](#new-hook-useactionstate) to handle common cases for Actions. In `react-dom` we're adding [`<form>` Actions](#form-actions) to manage forms automatically and [`useFormStatus`](#new-hook-useformstatus) to support the common cases for Actions in forms.
 
-단순한 React 19 예제로 위의 내용을 확인해보겠습니다.
+In React 19, the above example can be simplified to:
 
 ```js
-// <form> action 프로퍼티와 useActionState 사용하기
+// Using <form> Actions and useActionState
 function ChangeName({ name, setName }) {
   const [error, submitAction, isPending] = useActionState(
     async (previousState, formData) => {
@@ -147,56 +147,56 @@ function ChangeName({ name, setName }) {
 }
 ```
 
-다음 섹션에서는 React 19의 새로운 액션 기능들을 하나씩 살펴보겠습니다.
+In the next section, we'll break down each of the new Action features in React 19.
 
-### 새로운 Hook: `useActionState` {/*new-hook-useactionstate*/}
+### New hook: `useActionState` {/*new-hook-useactionstate*/}
 
-액션의 일반적인 사용을 위해 `useActionState` Hook을 추가하였습니다.
+To make the common cases easier for Actions, we've added a new hook called `useActionState`:
 
 ```js
 const [error, submitAction, isPending] = useActionState(
   async (previousState, newName) => {
     const error = await updateName(newName);
     if (error) {
-      // 액션의 어떤 결과든 반환할 수 있습니다.
-      // 이 예제에서는 오류를 반환합니다.
+      // You can return any result of the action.
+      // Here, we return only the error.
       return error;
     }
 
-    // 성공한 경우
+    // handle success
     return null;
   },
   null,
 );
 ```
 
-`useActionState`는 함수(액션)를 받아 호출할 래핑된 액션을 반환합니다. 이는 각 액션이 조합되기에 가능합니다. 래핑된 액션이 호출되면, `useActionState`는 액션의 마지막 결과를 `data`로, 액션의 대기 상태를 `pending`으로 반환합니다.
+`useActionState` accepts a function (the "Action"), and returns a wrapped Action to call. This works because Actions compose. When the wrapped Action is called, `useActionState` will return the last result of the Action as `data`, and the pending state of the Action as `pending`. 
 
 <Note>
 
-이전 Canary 릴리즈에서 `React.useActionState`를 `ReactDOM.useFormState`라고 불렀습니다. 그러나 이번 버전에서는 `useFormState`를 폐기하고 이름을 변경하였습니다.
+`React.useActionState` was previously called `ReactDOM.useFormState` in the Canary releases, but we've renamed it and deprecated `useFormState`.
 
-자세한 내용은 [#28491](https://github.com/facebook/react/pull/28491)을 참고하세요.
+See [#28491](https://github.com/facebook/react/pull/28491) for more info.
 
 </Note>
 
-자세한 내용은 [`useActionState`](/reference/react/useActionState)를 참고하세요.
+For more information, see the docs for [`useActionState`](/reference/react/useActionState).
 
-### React DOM: `<form>` 액션 {/*form-actions*/}
+### React DOM: `<form>` Actions {/*form-actions*/}
 
-액션은 `react-dom`을 위한 React 19의 새로운 `<form>` 기능과도 통합되어 있습니다. 액션 기반의 자동 폼 제출을 위해 `<form>`, `<input>`, `<button>` 요소의 `action`과 `formAction` 프로퍼티에 함수를 전달할 수 있습니다.
+Actions are also integrated with React 19's new `<form>` features for `react-dom`. We've added support for passing functions as the `action` and `formAction` props of `<form>`, `<input>`, and `<button>` elements to automatically submit forms with Actions:
 
 ```js [[1,1,"actionFunction"]]
 <form action={actionFunction}>
 ```
 
-`<form>` 액션이 성공적으로 수행되면, React는 제어되지 않는 컴포넌트들을 위해 폼을 자동으로 재설정합니다. 만약 `<form>`을 수동으로 재설정하고 싶다면, 새로운 React DOM API인 `requestFormReset`를 호출할 수 있습니다.
+When a `<form>` Action succeeds, React will automatically reset the form for uncontrolled components. If you need to reset the `<form>` manually, you can call the new `requestFormReset` React DOM API.
 
-자세한 내용은 `react-dom` 문서의 [`<form>`](/reference/react-dom/components/form), [`<input>`](/reference/react-dom/components/input), `<button>`을 참고하세요.
+For more information, see the `react-dom` docs for [`<form>`](/reference/react-dom/components/form), [`<input>`](/reference/react-dom/components/input), and `<button>`.
 
-### React DOM: 새로운 Hook: `useFormStatus` {/*new-hook-useformstatus*/}
+### React DOM: New hook: `useFormStatus` {/*new-hook-useformstatus*/}
 
-디자인 시스템에서, 프로퍼티 드릴링 없이 해당 컴포넌트가 속한 `<form>`의 정보에 접근해야 할 때가 있습니다. Context를 사용해 구현할 수도 있지만, 더 쉽게 다루기 위해 `useFormStatus` Hook을 추가하였습니다.
+In design systems, it's common to write design components that need access to information about the `<form>` they're in, without drilling props down to the component. This can be done via Context, but to make the common case easier, we've added a new hook `useFormStatus`:
 
 ```js [[1, 4, "pending"], [1, 5, "pending"]]
 import {useFormStatus} from 'react-dom';
@@ -207,13 +207,13 @@ function DesignButton() {
 }
 ```
 
-`useFormStatus`는 Context provider처럼 부모 `<form>`의 상태를 읽습니다.
+`useFormStatus` reads the status of the parent `<form>` as if the form was a Context provider.
 
-자세한 내용은 `react-dom` 문서의 [`useFormStatus`](/reference/react-dom/hooks/useFormStatus)를 참고하세요.
+For more information, see the `react-dom` docs for [`useFormStatus`](/reference/react-dom/hooks/useFormStatus).
 
-### 새로운 Hook: `useOptimistic` {/*new-hook-optimistic-updates*/}
+### New hook: `useOptimistic` {/*new-hook-optimistic-updates*/}
 
-데이터를 변경할 때 자주 사용되는 UI 패턴은, 비동기 요청이 진행되는 동안 최종 상태를 낙관적으로 표시하는 것입니다. 이 동작을 쉽게 다루기 위해, React 19에서는 `useOptimistic` Hook을 추가했습니다.
+Another common UI pattern when performing a data mutation is to show the final state optimistically while the async request is underway. In React 19, we're adding a new hook called `useOptimistic` to make this easier:
 
 ```js {2,6,13,19}
 function ChangeName({currentName, onUpdateName}) {
@@ -228,9 +228,9 @@ function ChangeName({currentName, onUpdateName}) {
 
   return (
     <form action={submitAction}>
-      <p>이름: {optimisticName}</p>
+      <p>Your name is: {optimisticName}</p>
       <p>
-        <label>이름 변경:</label>
+        <label>Change Name:</label>
         <input
           type="text"
           name="name"
@@ -242,28 +242,28 @@ function ChangeName({currentName, onUpdateName}) {
 }
 ```
 
-`useOptimistic` Hook은 `updateName` 요청이 진행되는 동안 `optimisticName`을 즉시 렌더링합니다. 변경 요청이 완료되거나 실패하면, React는 자동으로 `optimisticName`을 `currentName` 값으로 전환시킵니다.
+The `useOptimistic` hook will immediately render the `optimisticName` while the `updateName` request is in progress. When the update finishes or errors, React will automatically switch back to the `currentName` value.
 
-자세한 내용은 [`useOptimistic`](/reference/react/useOptimistic)을 참고하세요.
+For more information, see the docs for [`useOptimistic`](/reference/react/useOptimistic).
 
-### 새로운 API: `use` {/*new-feature-use*/}
+### New API: `use` {/*new-feature-use*/}
 
-React 19에서는 렌더링에서 리소스를 읽는 새로운 API, `use`가 도입되었습니다.
+In React 19 we're introducing a new API to read resources in render: `use`.
 
-예를 들어 `use`로 promise를 읽는 경우, React는 promise가 완료될 때까지 일시적으로 중단됩니다.
+For example, you can read a promise with `use`, and React will Suspend until the promise resolves:
 
 ```js {1,5}
 import {use} from 'react';
 
 function Comments({commentsPromise}) {
-  // `use` 는 promise가 완료될 때까지 중단됩니다.
+  // `use` will suspend until the promise resolves.
   const comments = use(commentsPromise);
   return comments.map(comment => <p key={comment.id}>{comment}</p>);
 }
 
 function Page({commentsPromise}) {
-  // Comments에서 `use`가 중단되면,
-  // 아래의 suspense boundary가 표시됩니다.
+  // When `use` suspends in Comments,
+  // this Suspense boundary will be shown.
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Comments commentsPromise={commentsPromise} />
@@ -274,9 +274,9 @@ function Page({commentsPromise}) {
 
 <Note>
 
-#### `use`는 렌더링 중 생성된 promise를 지원하지 않습니다. {/*use-does-not-support-promises-created-in-render*/}
+#### `use` does not support promises created in render. {/*use-does-not-support-promises-created-in-render*/}
 
-렌더링 중 생성된 promise를 `use`에 전달한다면, React는 아래와 같은 경고를 표시합니다.
+If you try to pass a promise created in render to `use`, React will warn:
 
 <ConsoleBlockMulti>
 
@@ -288,11 +288,11 @@ A component was suspended by an uncached promise. Creating promises inside a Cli
 
 </ConsoleBlockMulti>
 
-이 문제를 해결하려면 promise 캐싱을 지원하는 supense 기반 라이브러리 또는 프레임워크에서 promise를 전달해야 합니다. 향후 렌더링에서 promise를 더 쉽게 캐싱할 수 있는 기능을 제공할 계획입니다.
+To fix, you need to pass a promise from a suspense powered library or framework that supports caching for promises. In the future we plan to ship features to make it easier to cache promises in render.
 
 </Note>
 
-`use`로 Context를 읽을 수도 있으며, 얼리 리턴과 같이 조건부로 Context를 읽는 것도 가능합니다.
+You can also read context with `use`, allowing you to read Context conditionally such as after early returns:
 
 ```js {1,11}
 import {use} from 'react';
@@ -303,8 +303,8 @@ function Heading({children}) {
     return null;
   }
   
-  // 얼리 리턴에 의해 
-  // useContext를 사용할 수 없습니다.
+  // This would not work with useContext
+  // because of the early return.
   const theme = use(ThemeContext);
   return (
     <h1 style={{color: theme.color}}>
@@ -314,59 +314,58 @@ function Heading({children}) {
 }
 ```
 
-`use` API는 Hook과 유사하게 렌더링에서만 호출될 수 있습니다. Hook과 다른 점은, `use`는 조건부로 호출될 수 있습니다. 향후 `use`를 활용해 렌더링에서 리소스를 사용하는 더 많은 방법들을 제공할 예정입니다.
+The `use` API can only be called in render, similar to hooks. Unlike hooks, `use` can be called conditionally. In the future we plan to support more ways to consume resources in render with `use`.
 
-자세한 내용은 [`use`](/reference/react/use)를 참고하세요.
+For more information, see the docs for [`use`](/reference/react/use).
 
 
-## React 서버 컴포넌트 {/*react-server-components*/}
+## React Server Components {/*react-server-components*/}
 
-### 서버 컴포넌트 {/*server-components*/}
+### Server Components {/*server-components*/}
 
-서버 컴포넌트는 번들링 전, 클라이언트 애플리케이션 또는 SSR 서버와 '분리된 환경'에서 컴포넌트를 미리 렌더링할 수 있는 새로운 방법입니다. 여기서 '분리된 환경'은 React 서버 컴포넌트에서 '서버'를 의미합니다. 서버 컴포넌트는 CI 서버에서 빌드 시 한 번 실행되거나 웹 서버에서 각 요청에 대해 실행될 수 있습니다.
+Server Components are a new option that allows rendering components ahead of time, before bundling, in an environment separate from your client application or SSR server. This separate environment is the "server" in React Server Components. Server Components can run once at build time on your CI server, or they can be run for each request using a web server.
 
 React 19 includes all of the React Server Components features included from the Canary channel. This means libraries that ship with Server Components can now target React 19 as a peer dependency with a `react-server` [export condition](https://github.com/reactjs/rfcs/blob/main/text/0227-server-module-conventions.md#react-server-conditional-exports) for use in frameworks that support the [Full-stack React Architecture](/learn/start-a-new-react-project#which-features-make-up-the-react-teams-full-stack-architecture-vision). 
 
-React 19에는 Canary 버전의 모든 React 서버 컴포넌트 기능을 포함합니다. 즉, 서버 컴포넌트와 함께 제공되는 라이브러리들은 [풀스택 React 아키텍쳐](/learn/start-a-new-react-project#which-features-make-up-the-react-teams-full-stack-architecture-vision)를 지원하는 프레임워크에서 사용하기 위해 React 19를 하위 종속성으로 타겟팅할 수 있습니다. (참고: `react-server` [export condition](https://github.com/reactjs/rfcs/blob/main/text/0227-server-module-conventions.md#react-server-conditional-exports))
 
 <Note>
 
-#### 서버 컴포넌트를 지원하려면 어떻게 해야 하나요? {/*how-do-i-build-support-for-server-components*/}
+#### How do I build support for Server Components? {/*how-do-i-build-support-for-server-components*/}
 
-React 19의 React 서버 컴포넌트는 안정적이며 메이저 버전 간에 충돌되지 않지만, React 서버 컴포넌트 번들러 또는 프레임워크를 구현하는 데 사용되는 기본 API는 유의적 버전을 따르지 않으므로 React 19.x의 마이너 버전 간에 충돌될 수 있습니다.
+While React Server Components in React 19 are stable and will not break between major versions, the underlying APIs used to implement a React Server Components bundler or framework do not follow semver and may break between minors in React 19.x. 
 
-번들러 또는 프레임워크로서 React 서버 컴포넌트를 지원하려면 특정 React 버전으로 고정하거나 Canary 릴리즈를 사용하는 것이 좋습니다. 향후에도 번들러 및 프레임워크와 협력하여 React 서버 컴포넌트를 구현하는 데 사용되는 API를 안정화할 예정입니다.
+To support React Server Components as a bundler or framework, we recommend pinning to a specific React version, or using the Canary release. We will continue working with bundlers and frameworks to stabilize the APIs used to implement React Server Components in the future.
 
 </Note>
 
 
-자세한 내용은 [React 서버 컴포넌트](/reference/rsc/server-components)를 참고하세요.
+For more, see the docs for [React Server Components](/reference/rsc/server-components).
 
-### 서버 액션 {/*server-actions*/}
+### Server Actions {/*server-actions*/}
 
-서버 액션은 클라이언트 컴포넌트가 서버에서 실행되는 비동기 함수를 호출할 수 있게 합니다.
+Server Actions allow Client Components to call async functions executed on the server.
 
-"use server" 지시어로 서버 액션이 정의되면, 프레임워크는 자동으로 서버 함수에 대한 참조를 생성하고 해당 참조를 클라이언트 컴포넌트에 전달합니다. 클라이언트에서 해당 함수가 호출되면 React는 서버에 함수를 실행하라는 요청을 보내고 결과를 반환합니다.
+When a Server Action is defined with the `"use server"` directive, your framework will automatically create a reference to the server function, and pass that reference to the Client Component. When that function is called on the client, React will send a request to the server to execute the function, and return the result.
 
 <Note>
 
-#### 서버 컴포넌트에는 지시어가 없습니다. {/*there-is-no-directive-for-server-components*/}
+#### There is no directive for Server Components. {/*there-is-no-directive-for-server-components*/}
 
-`"use server"` 지시어가 서버 컴포넌트를 나타낸다고 오해하는 경우가 많지만, 서버 컴포넌트에는 지시어가 없습니다. `"use server"` 지시어는 서버 액션에 사용됩니다.
+A common misunderstanding is that Server Components are denoted by `"use server"`, but there is no directive for Server Components. The `"use server"` directive is used for Server Actions.
 
-자세한 내용은 [지시어](/reference/rsc/directives)를 참고하세요.
+For more info, see the docs for [Directives](/reference/rsc/directives).
 
 </Note>
 
-서버 액션은 서버 컴포넌트에서 생성하여 클라이언트 컴포넌트에 props로 전달하거나 클라이언트 컴포넌트에 import해 사용할 수 있습니다.
+Server Actions can be created in Server Components and passed as props to Client Components, or they can be imported and used in Client Components.
 
-자세한 내용은 [React 서버 액션](/reference/rsc/server-actions)을 참고하세요.
+For more, see the docs for [React Server Actions](/reference/rsc/server-actions).
 
-## React 19의 개선 사항 {/*improvements-in-react-19*/}
+## Improvements in React 19 {/*improvements-in-react-19*/}
 
-### `ref`를 prop으로 사용하기 {/*ref-as-a-prop*/}
+### `ref` as a prop {/*ref-as-a-prop*/}
 
-React 19부터 함수 컴포넌트에서 `ref`를 prop으로 사용할 수 있습니다.
+Starting in React 19, you can now access `ref` as a prop for function components:
 
 ```js [[1, 1, "ref"], [1, 2, "ref", 45], [1, 6, "ref", 14]]
 function MyInput({placeholder, ref}) {
@@ -377,17 +376,17 @@ function MyInput({placeholder, ref}) {
 <MyInput ref={ref} />
 ```
 
-새로운 함수 컴포넌트에는 더 이상 `forwardRef`가 필요하지 않으며, 새로운 `ref` prop을 사용하도록 컴포넌트를 자동으로 업데이트하는 codemod를 배포할 예정입니다. 향후 버전에서는 `forwardRef`를 더 이상 사용하지 않고 제거할 예정입니다.
+New function components will no longer need `forwardRef`, and we will be publishing a codemod to automatically update your components to use the new `ref` prop. In future versions we will deprecate and remove `forwardRef`.
 
 <Note>
 
-클래스 컴포넌트에 전달된 `refs`는 컴포넌트 인스턴스를 참조하므로 props로 전달되지 않습니다.
+`refs` passed to classes are not passed as props since they reference the component instance.
 
 </Note>
 
-### 하이드레이션 오류 개선 {/*diffs-for-hydration-errors*/}
+### Diffs for hydration errors {/*diffs-for-hydration-errors*/}
 
-`react-dom`의 하이드레이션 오류 표시 방식 또한 개선되었습니다. 이전에는 개발 환경에서 하이드레이션 불일치가 발생했을 때 구체적인 정보 없이 여러 에러를 보여주고 있었습니다.
+We also improved error reporting for hydration errors in `react-dom`. For example, instead of logging multiple errors in DEV without any information about the mismatch:
 
 <ConsoleBlockMulti>
 
@@ -429,7 +428,8 @@ Uncaught Error: Text content does not match server-rendered HTML.
 
 </ConsoleBlockMulti>
 
-React 19에서는 불일치 사항에 대해 하나의 오류 메세지로 표시합니다.
+We now log a single message with a diff of the mismatch:
+
 
 <ConsoleBlockMulti>
 
@@ -454,9 +454,9 @@ https://react.dev/link/hydration-mismatch {'\n'}
 
 </ConsoleBlockMulti>
 
-### `<Context>`를 provider로 사용하기 {/*context-as-a-provider*/}
+### `<Context>` as a provider {/*context-as-a-provider*/}
 
-React 19에서는 `<Context.Provider>` 대신 `<Context>`를 provider로 사용할 수 있습니다.
+In React 19, you can render `<Context>` as a provider instead of `<Context.Provider>`:
 
 
 ```js {5,7}
@@ -471,7 +471,7 @@ function App({children}) {
 }
 ```
 
-새로운 Context provider는 `<Context>`를 사용할 수 있으며, 이미 작성된 provider를 변경하는 codemod를 배포할 예정입니다. 이후 버전에서 `<Context.Provider>`는 폐기될 예정입니다.
+New Context providers can use `<Context>` and we will be publishing a codemod to convert existing providers. In future versions we will deprecate `<Context.Provider>`.
 
 ### Cleanup functions for refs {/*cleanup-functions-for-refs*/}
 
@@ -775,7 +775,7 @@ In past versions, using Custom Elements in React has been difficult because Reac
 Thanks to [Joey Arhar](https://github.com/josepharhar) for driving the design and implementation of Custom Element support in React.
 
 
-#### 업그레이드하는 방법 {/*how-to-upgrade*/}
+#### How to upgrade {/*how-to-upgrade*/}
 See the [React 19 Upgrade Guide](/blog/2024/04/25/react-19-upgrade-guide) for step-by-step instructions and a full list of breaking and notable changes.
 
 
